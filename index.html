@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camarão Filé - Vendas e Gestão</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f0f0f0; }
+        header { background: #007bff; color: white; padding: 20px; text-align: center; }
+        nav { background: #333; padding: 10px; text-align: center; }
+        nav a { color: white; margin: 0 20px; text-decoration: none; font-weight: bold; }
+        section { margin: 20px auto; max-width: 800px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        form label { display: block; margin: 10px 0 5px; }
+        form input, form select, form textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; }
+        button { background: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #218838; }
+        #resumo { background: #e9ecef; padding: 15px; border-radius: 4px; margin: 20px 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        table th, table td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Camarão Filé Premium</h1>
+        <p>Qualidade direta do produtor</p>
+    </header>
+    
+    <nav>
+        <a href="#vendas" onclick="mostrarSecao('vendas')">Loja Online</a>
+        <a href="#gestao" onclick="mostrarSecao('gestao')">Gestão Empresarial</a>
+    </nav>
+    
+    <section id="vendas">
+        <h2>Compre Camarão Filé</h2>
+        <p>Preços:</p>
+        <ul>
+            <li>500g: R$ 35,00</li>
+            <li>1kg: R$ 70,00</li>
+            <li>Acima de 10kg (atacado): R$ 60,00 por kg</li>
+        </ul>
+        <p>Frete fixo: R$ 7,00</p>
+        
+        <form id="formPedido">
+            <label for="quantidade">Escolha a quantidade:</label>
+            <select id="quantidade" required>
+                <option value="">Selecione...</option>
+                <option value="500g">500g - R$ 35,00</option>
+                <option value="1kg">1kg - R$ 70,00</option>
+                <option value="atacado">Acima de 10kg (atacado) - Informe kg</option>
+            </select>
+            
+            <div id="divKgAtacado" class="hidden">
+                <label for="kgAtacado">Quantos kg (mínimo 10)?</label>
+                <input type="number" id="kgAtacado" min="10" step="0.5">
+            </div>
+            
+            <label for="nome">Nome completo:</label>
+            <input type="text" id="nome" required>
+            
+            <label for="endereco">Endereço completo para entrega:</label>
+            <textarea id="endereco" required></textarea>
+            
+            <label for="telefone">Telefone para contato (WhatsApp):</label>
+            <input type="tel" id="telefone" required>
+            
+            <button type="button" onclick="calcularPreco()">Calcular Preço Total</button>
+            
+            <div id="resumo" class="hidden">
+                <h3>Resumo do Pedido</h3>
+                <p id="detalhesProduto"></p>
+                <p>Frete: R$ 7,00</p>
+                <p id="totalTexto"><strong>Total: R$ 0,00</strong></p>
+                
+                <h3>Pagamento via Pix</h3>
+                <p>Chave Pix (CNPJ): <strong>61524616000156</strong></p>
+                <p>Envie o comprovante após o pagamento.</p>
+                
+                <button type="button" onclick="enviarWhatsApp()">Enviar Pedido via WhatsApp</button>
+            </div>
+        </form>
+    </section>
+    
+    <section id="gestao" class="hidden">
+        <h2>Gestão Empresarial</h2>
+        
+        <h3>Registrar Despesa</h3>
+        <input type="text" id="descDespesa" placeholder="Descrição">
+        <input type="number" id="valorDespesa" placeholder="Valor" step="0.01">
+        <button onclick="addDespesa()">Adicionar Despesa</button>
+        
+        <h3>Vendas Registradas (inclui automáticas da loja)</h3>
+        <table id="tabelaVendas">
+            <thead><tr><th>Data</th><th>Descrição</th><th>Valor</th></tr></thead>
+            <tbody></tbody>
+        </table>
+        
+        <h3>Despesas</h3>
+        <table id="tabelaDespesas">
+            <thead><tr><th>Data</th><th>Descrição</th><th>Valor</th></tr></thead>
+            <tbody></tbody>
+        </table>
+        
+        <h3>Balanço</h3>
+        <p>Total Vendas: R$ <span id="totalVendas">0.00</span></p>
+        <p>Total Despesas: R$ <span id="totalDespesas">0.00</span></p>
+        <p><strong>Lucro Líquido: R$ <span id="lucro">0.00</span></strong></p>
+    </section>
+
+    <script>
+        // Mostrar seção
+        function mostrarSecao(id) {
+            document.getElementById('vendas').classList.add('hidden');
+            document.getElementById('gestao').classList.add('hidden');
+            document.getElementById(id).classList.remove('hidden');
+            if (id === 'gestao') atualizarGestao();
+        }
+        
+        // Quantidade change
+        document.getElementById('quantidade').addEventListener('change', function() {
+            if (this.value === 'atacado') {
+                document.getElementById('divKgAtacado').classList.remove('hidden');
+            } else {
+                document.getElementById('divKgAtacado').classList.add('hidden');
+            }
+        });
+        
+        // Calcular preço
+        function calcularPreco() {
+            const qty = document.getElementById('quantidade').value;
+            let precoProduto = 0;
+            let descricao = '';
+            let kg = 1;
+            
+            if (qty === '500g') {
+                precoProduto = 35;
+                descricao = '500g de camarão filé';
+            } else if (qty === '1kg') {
+                precoProduto = 70;
+                descricao = '1kg de camarão filé';
+            } else if (qty === 'atacado') {
+                kg = parseFloat(document.getElementById('kgAtacado').value);
+                if (kg < 10 || isNaN(kg)) {
+                    alert('Informe pelo menos 10kg para atacado!');
+                    return;
+                }
+                precoProduto = kg * 60;
+                descricao = kg + 'kg de camarão filé (atacado)';
+            } else {
+                alert('Selecione a quantidade!');
+                return;
+            }
+            
+            const frete = 7;
+            const total = precoProduto + frete;
+            
+            document.getElementById('detalhesProduto').innerText = descricao + ' - R$ ' + precoProduto.toFixed(2);
+            document.getElementById('totalTexto').innerHTML = '<strong>Total (com frete): R$ ' + total.toFixed(2) + '</strong>';
+            document.getElementById('resumo').classList.remove('hidden');
+            
+            // Salvar pedido temporário para WhatsApp e registro
+            sessionStorage.setItem('pedidoTemp', JSON.stringify({
+                descricao, precoProduto, frete, total,
+                nome: document.getElementById('nome').value,
+                endereco: document.getElementById('endereco').value,
+                telefone: document.getElementById('telefone').value
+            }));
+        }
+        
+        // Enviar WhatsApp e registrar venda
+        function enviarWhatsApp() {
+            const data = JSON.parse(sessionStorage.getItem('pedidoTemp'));
+            if (!data || !data.nome || !data.endereco || !data.telefone) {
+                alert('Preencha todos os campos e calcule o preço primeiro!');
+                return;
+            }
+            
+            const mensagem = `*Novo Pedido de Camarão Filé*%0A%0A` +
+                             `*Produto:* ${data.descricao}%0A` +
+                             `*Preço produto:* R$ ${data.precoProduto.toFixed(2)}%0A` +
+                             `*Frete:* R$ ${data.frete.toFixed(2)}%0A` +
+                             `*Total:* R$ ${data.total.toFixed(2)}%0A%0A` +
+                             `*Nome:* ${data.nome}%0A` +
+                             `*Endereço:* ${data.endereco}%0A` +
+                             `*Telefone:* ${data.telefone}%0A%0A` +
+                             `Aguardo o pagamento via Pix para confirmar!`;
+            
+            const whatsappUrl = 'https://wa.me/55' + data.telefone.replace(/\D/g, '') + '?text=' + mensagem;
+            window.open(whatsappUrl, '_blank');
+            
+            // Registrar venda automaticamente na gestão
+            registrarVenda(data.descricao + ' (online)', data.total);
+            alert('Mensagem aberta no WhatsApp! A venda foi registrada automaticamente na gestão.');
+            sessionStorage.removeItem('pedidoTemp');
+        }
+        
+        // Gestão de dados (localStorage)
+        function getVendas() {
+            return JSON.parse(localStorage.getItem('vendas') || '[]');
+        }
+        function getDespesas() {
+            return JSON.parse(localStorage.getItem('despesas') || '[]');
+        }
+        function salvarVendas(v) { localStorage.setItem('vendas', JSON.stringify(v)); }
+        function salvarDespesas(d) { localStorage.setItem('despesas', JSON.stringify(d)); }
+        
+        function registrarVenda(desc, valor) {
+            const vendas = getVendas();
+            vendas.push({data: new Date().toLocaleString('pt-BR'), desc, valor});
+            salvarVendas(vendas);
+            atualizarGestao();
+        }
+        
+        function addDespesa() {
+            const desc = document.getElementById('descDespesa').value;
+            const valor = parseFloat(document.getElementById('valorDespesa').value);
+            if (!desc || isNaN(valor)) {
+                alert('Preencha descrição e valor!');
+                return;
+            }
+            const despesas = getDespesas();
+            despesas.push({data: new Date().toLocaleString('pt-BR'), desc, valor});
+            salvarDespesas(despesas);
+            document.getElementById('descDespesa').value = '';
+            document.getElementById('valorDespesa').value = '';
+            atualizarGestao();
+        }
+        
+        function atualizarGestao() {
+            const vendas = getVendas();
+            const despesas = getDespesas();
+            
+            // Tabela vendas
+            const tbodyV = document.querySelector('#tabelaVendas tbody');
+            tbodyV.innerHTML = '';
+            let totalVendas = 0;
+            vendas.forEach(v => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>\( {v.data}</td><td> \){v.desc}</td><td>R$ ${v.valor.toFixed(2)}</td>`;
+                tbodyV.appendChild(tr);
+                totalVendas += v.valor;
+            });
+            
+            // Tabela despesas
+            const tbodyD = document.querySelector('#tabelaDespesas tbody');
+            tbodyD.innerHTML = '';
+            let totalDespesas = 0;
+            despesas.forEach(d => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>\( {d.data}</td><td> \){d.desc}</td><td>R$ ${d.valor.toFixed(2)}</td>`;
+                tbodyD.appendChild(tr);
+                totalDespesas += d.valor;
+            });
+            
+            document.getElementById('totalVendas').innerText = totalVendas.toFixed(2);
+            document.getElementById('totalDespesas').innerText = totalDespesas.toFixed(2);
+            document.getElementById('lucro').innerText = (totalVendas - totalDespesas).toFixed(2);
+        }
+        
+        // Inicializar
+        mostrarSecao('vendas');
+        atualizarGestao();
+    </script>
+</body>
+</html>
