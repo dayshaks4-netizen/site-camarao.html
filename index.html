@@ -37,11 +37,10 @@
         <h2>Compre Camarão Filé</h2>
         
         <div class="galeria">
-            <p>Olha só a qualidade do nosso camarão filé premium:</p>
-            <img src="https://i.pinimg.com/736x/8e/58/d9/8e58d90076418a1b36f70a0b849b32e0.jpg" alt="Camarão filé fresco premium" class="galeria-img">
-            <img src="https://st.focusedcollection.com/9163412/i/1800/focused_171168704-stock-photo-delicious-fresh-prawns-black-stone.jpg" alt="Camarão fresco delicioso" class="galeria-img">
-            <img src="https://www.centralfishes.com.br/wp-content/uploads/2020/12/CAMARAO-CATIVEIRO-COM-CASCA-SEM-CABECA.JPG-e1607386703382.jpg" alt="Camarão filé limpo sem cabeça" class="galeria-img">
-            <img src="https://trela.com.br/_next/image?url=https%3A%2F%2Fprod-zapt-images.s3.sa-east-1.amazonaws.com%2Fproducts%2F1f7e9862-3ced-400d-aa44-66565cd4d391.png&w=3840&q=75" alt="Camarão cinza filé premium" class="galeria-img">
+            <p>Olha só a qualidade e as delícias que você pode preparar com nosso camarão filé premium:</p>
+            <img src="https://i.imgur.com/3ZfZ8pJ.jpeg" alt="Camarão filé fresco sobre alface" class="galeria-img">
+            <img src="https://i.imgur.com/0kL5u7p.jpeg" alt="Pizza deliciosa com camarão filé" class="galeria-img">
+            <img src="https://i.imgur.com/0m4o5cP.jpeg" alt="Camarão filé ao alho e óleo" class="galeria-img">
         </div>
         
         <p>Preços:</p>
@@ -201,85 +200,4 @@
             const mensagem = `*Novo Pedido de Camarão Filé*%0A%0A` +
                              `*Produto:* ${data.descricao}%0A` +
                              `*Preço produto:* R$ ${data.precoProduto.toFixed(2)}%0A` +
-                             `*Frete:* R$ ${data.frete.toFixed(2)}%0A` +
-                             `*Total:* R$ ${data.total.toFixed(2)}%0A%0A` +
-                             `*Nome:* ${data.nome}%0A` +
-                             `*Endereço:* ${data.endereco}%0A` +
-                             `*Telefone:* ${data.telefone}%0A%0A` +
-                             `Aguardo o pagamento via Pix para confirmar!`;
-            
-            const whatsappUrl = 'https://wa.me/55' + data.telefone.replace(/\D/g, '') + '?text=' + mensagem;
-            window.open(whatsappUrl, '_blank');
-            
-            registrarVenda(data.descricao + ' (online)', data.total);
-            alert('Mensagem aberta no WhatsApp! A venda foi registrada automaticamente na gestão.');
-            sessionStorage.removeItem('pedidoTemp');
-        }
-        
-        // Gestão de dados
-        function getVendas() {
-            return JSON.parse(localStorage.getItem('vendas') || '[]');
-        }
-        function getDespesas() {
-            return JSON.parse(localStorage.getItem('despesas') || '[]');
-        }
-        function salvarVendas(v) { localStorage.setItem('vendas', JSON.stringify(v)); }
-        function salvarDespesas(d) { localStorage.setItem('despesas', JSON.stringify(d)); }
-        
-        function registrarVenda(desc, valor) {
-            const vendas = getVendas();
-            vendas.push({data: new Date().toLocaleString('pt-BR'), desc, valor});
-            salvarVendas(vendas);
-            atualizarGestao();
-        }
-        
-        function addDespesa() {
-            const desc = document.getElementById('descDespesa').value;
-            const valor = parseFloat(document.getElementById('valorDespesa').value);
-            if (!desc || isNaN(valor)) {
-                alert('Preencha descrição e valor!');
-                return;
-            }
-            const despesas = getDespesas();
-            despesas.push({data: new Date().toLocaleString('pt-BR'), desc, valor});
-            salvarDespesas(despesas);
-            document.getElementById('descDespesa').value = '';
-            document.getElementById('valorDespesa').value = '';
-            atualizarGestao();
-        }
-        
-        function atualizarGestao() {
-            const vendas = getVendas();
-            const despesas = getDespesas();
-            
-            const tbodyV = document.querySelector('#tabelaVendas tbody');
-            tbodyV.innerHTML = '';
-            let totalVendas = 0;
-            vendas.forEach(v => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>\( {v.data}</td><td> \){v.desc}</td><td>R$ ${v.valor.toFixed(2)}</td>`;
-                tbodyV.appendChild(tr);
-                totalVendas += v.valor;
-            });
-            
-            const tbodyD = document.querySelector('#tabelaDespesas tbody');
-            tbodyD.innerHTML = '';
-            let totalDespesas = 0;
-            despesas.forEach(d => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>\( {d.data}</td><td> \){d.desc}</td><td>R$ ${d.valor.toFixed(2)}</td>`;
-                tbodyD.appendChild(tr);
-                totalDespesas += d.valor;
-            });
-            
-            document.getElementById('totalVendas').innerText = totalVendas.toFixed(2);
-            document.getElementById('totalDespesas').innerText = totalDespesas.toFixed(2);
-            document.getElementById('lucro').innerText = (totalVendas - totalDespesas).toFixed(2);
-        }
-        
-        // Inicializar
-        mostrarSecao('vendas');
-        atualizarGestao();
-    </script>
-</body>
-</html>
+                             `*Frete:* R$ ${
