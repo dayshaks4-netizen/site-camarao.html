@@ -18,12 +18,14 @@
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         table th, table td { border: 1px solid #ccc; padding: 10px; text-align: left; }
         .hidden { display: none; }
+        .galeria-img { width: 100%; max-width: 600px; height: auto; border-radius: 8px; margin: 15px auto; display: block; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .galeria { text-align: center; }
     </style>
 </head>
 <body>
     <header>
         <h1>Camarão Filé Premium</h1>
-        <p>Qualidade direta do produtor</p>
+        <p>Qualidade direta do produtor – Fresquinho e delicioso!</p>
     </header>
     
     <nav>
@@ -33,6 +35,15 @@
     
     <section id="vendas">
         <h2>Compre Camarão Filé</h2>
+        
+        <div class="galeria">
+            <p>Olha só a qualidade do nosso camarão filé premium:</p>
+            <img src="https://i.pinimg.com/736x/8e/58/d9/8e58d90076418a1b36f70a0b849b32e0.jpg" alt="Camarão filé fresco premium" class="galeria-img">
+            <img src="https://st.focusedcollection.com/9163412/i/1800/focused_171168704-stock-photo-delicious-fresh-prawns-black-stone.jpg" alt="Camarão fresco delicioso" class="galeria-img">
+            <img src="https://www.centralfishes.com.br/wp-content/uploads/2020/12/CAMARAO-CATIVEIRO-COM-CASCA-SEM-CABECA.JPG-e1607386703382.jpg" alt="Camarão filé limpo sem cabeça" class="galeria-img">
+            <img src="https://trela.com.br/_next/image?url=https%3A%2F%2Fprod-zapt-images.s3.sa-east-1.amazonaws.com%2Fproducts%2F1f7e9862-3ced-400d-aa44-66565cd4d391.png&w=3840&q=75" alt="Camarão cinza filé premium" class="galeria-img">
+        </div>
+        
         <p>Preços:</p>
         <ul>
             <li>500g: R$ 35,00</li>
@@ -117,11 +128,11 @@
                 mostrarSecao('gestao');
             } else {
                 alert("Senha incorreta! Tente novamente.");
-                mostrarSecao('vendas'); // Volta pra loja se errar
+                mostrarSecao('vendas');
             }
         }
         
-        // Mostrar seção (loja é pública)
+        // Mostrar seção
         function mostrarSecao(id) {
             document.getElementById('vendas').classList.add('hidden');
             document.getElementById('gestao').classList.add('hidden');
@@ -205,7 +216,7 @@
             sessionStorage.removeItem('pedidoTemp');
         }
         
-        // Gestão de dados (localStorage)
+        // Gestão de dados
         function getVendas() {
             return JSON.parse(localStorage.getItem('vendas') || '[]');
         }
