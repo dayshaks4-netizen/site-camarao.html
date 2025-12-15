@@ -28,7 +28,7 @@
     
     <nav>
         <a href="#vendas" onclick="mostrarSecao('vendas')">Loja Online</a>
-        <a href="#gestao" onclick="mostrarSecao('gestao')">Gestão Empresarial</a>
+        <a href="#gestao" onclick="acessarGestao()">Gestão Empresarial</a>
     </nav>
     
     <section id="vendas">
@@ -108,7 +108,20 @@
     </section>
 
     <script>
-        // Mostrar seção
+        const SENHA_GESTAO = "pizza camarao"; // Senha secreta só nossa 😊
+        
+        // Acessar gestão com senha
+        function acessarGestao() {
+            const tentativa = prompt("Digite a senha para acessar a Gestão Empresarial:");
+            if (tentativa === SENHA_GESTAO) {
+                mostrarSecao('gestao');
+            } else {
+                alert("Senha incorreta! Tente novamente.");
+                mostrarSecao('vendas'); // Volta pra loja se errar
+            }
+        }
+        
+        // Mostrar seção (loja é pública)
         function mostrarSecao(id) {
             document.getElementById('vendas').classList.add('hidden');
             document.getElementById('gestao').classList.add('hidden');
@@ -158,7 +171,6 @@
             document.getElementById('totalTexto').innerHTML = '<strong>Total (com frete): R$ ' + total.toFixed(2) + '</strong>';
             document.getElementById('resumo').classList.remove('hidden');
             
-            // Salvar pedido temporário para WhatsApp e registro
             sessionStorage.setItem('pedidoTemp', JSON.stringify({
                 descricao, precoProduto, frete, total,
                 nome: document.getElementById('nome').value,
@@ -188,7 +200,6 @@
             const whatsappUrl = 'https://wa.me/55' + data.telefone.replace(/\D/g, '') + '?text=' + mensagem;
             window.open(whatsappUrl, '_blank');
             
-            // Registrar venda automaticamente na gestão
             registrarVenda(data.descricao + ' (online)', data.total);
             alert('Mensagem aberta no WhatsApp! A venda foi registrada automaticamente na gestão.');
             sessionStorage.removeItem('pedidoTemp');
@@ -230,7 +241,6 @@
             const vendas = getVendas();
             const despesas = getDespesas();
             
-            // Tabela vendas
             const tbodyV = document.querySelector('#tabelaVendas tbody');
             tbodyV.innerHTML = '';
             let totalVendas = 0;
@@ -241,7 +251,6 @@
                 totalVendas += v.valor;
             });
             
-            // Tabela despesas
             const tbodyD = document.querySelector('#tabelaDespesas tbody');
             tbodyD.innerHTML = '';
             let totalDespesas = 0;
